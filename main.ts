@@ -5,7 +5,14 @@ async function handler(
     info: Deno.ServeHandlerInfo,
 ): Promise<Response> {
     const url = new URL(req.url);
-    const clientIP = info.remoteAddr.hostname;
+
+    let clientIP = "Unknown";
+
+    if (info.remoteAddr.transport === "tcp") {
+        clientIP = info.remoteAddr.hostname;
+    } else if (info.remoteAddr.transport === "unix") {
+        clientIP = "Unix socket";
+    }
 
     console.log(`${req.method} ${url.pathname}`);
 
@@ -18,7 +25,7 @@ async function handler(
 
     <body>
         <h1>Hello, world!</h1>
-        <p>Your IP address: ${clientIP}</p>
+        <p>Your IP address: \`${clientIP}\`</p>
     </body>
 </html>`;
 
